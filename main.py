@@ -40,21 +40,26 @@ class Board:
 
 	def is_winner(self, marker):
 		return self.check_lines(marker, 4) >= 1
-
+	
 	def check_lines(self, marker, n):
 		directions = (((0, 0), (1, 0), (2, 0), (3, 0)), ((0, 0), (0, 1), (0, 2), (0, 3)), ((0, 0), (1, 1), (2, 2), (3, 3)), ((0, 0), (-1, 1), (-2, 2), (-3, 3)))
 		num_of_lines = 0
 		for col in range(7):
 			for row in range(6):
 				for direction in directions:
-					for i in range(n):
+					markers_list = []
+					for i in range(4):
 						try:
-							if self.board[col + direction[i][0]][row + direction[i][1]] != marker:
-								break
+							current_col = col + direction[i][0]
+							current_row = row + direction[i][1]
+							if current_col < 0 or current_row < 0:
+								raise IndexError 
+							markers_list.append(self.board[current_col][current_row])
 						except IndexError:
 							break
 					else: 
-						num_of_lines += 1
+						if markers_list.count(marker) >= n and markers_list.count(marker) + markers_list.count('_') == 4:
+							num_of_lines += 1
 
 		return num_of_lines
 
