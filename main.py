@@ -99,7 +99,7 @@ class Player:
 class Random(Player):
 	def make_move(self, board):
 		from random import choice
-		options = [_ for _ in range(9) if board.legal_move(_)]
+		options = [_ for _ in range(7) if board.legal_move(_)]
 		return choice(options)
 
 
