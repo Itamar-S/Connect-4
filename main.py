@@ -276,29 +276,43 @@ class Player:
 		self.marker = marker
 		self.opponent_marker = opponent_marker
 
-	def make_move(self, board):
-		"""Asks the player to make a move
-		
-		Parameters
-        ----------
-		board : Board
-			the current board
-		
-		Returns
-    	-------
-		int
-			the column that the player selected
-		"""
+		def make_move(self, board):
+			"""Asks the player to make a move
 
-		# Asking the player to make a move
-		move = int(input(f'This is the current board, {self.name} please make a move 1-7\n')) - 1
-		while True:
-			# If the move is legal, so the method returns it.
-			if board.legal_move(move):
-				return move
-			# Otherwise, the method asks the player again, until he returns a valid move.
+			Parameters
+			----------
+			board : Board
+				the current board
+
+			Returns
+			-------
+			int
+				the column that the player selected
+			"""
+
+			# Asking the player to make a move
+			move = input(f'This is the current board, {self.name} please make a move 1-7\n')
+			# If the player wrote AI, so the computer helps him in the game
+			if move.lower() == 'ai':
+				# We creates a temporary computer object to do a move for the player
+				computer_player = Computer(self.name, self.marker, self.opponent_marker)
+				return computer_player.make_move(board)
 			else:
-				move = int(input('Illegal move, please try again.\n')) - 1
+				# Otherwise, we return the move that the human player wrote
+				move = int(move) - 1
+			while True:
+				# If the move is legal, so the method returns it.
+				if board.legal_move(move):
+					return move
+				# Otherwise, the method asks the player again, until he returns a valid answer.
+				else:
+					# Like before, the method asks the player to make a move, and the player can answer 'AI'
+					move = input('Illegal move, please try again.\n')
+					if move.lower() == 'ai':
+						computer_player = Computer(self.name, self.marker, self.opponent_marker)
+						return computer_player.make_move(board)
+					else:
+						move = int(move) - 1
 
 
 class Random(Player):
