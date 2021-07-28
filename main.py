@@ -276,43 +276,43 @@ class Player:
 		self.marker = marker
 		self.opponent_marker = opponent_marker
 
-		def make_move(self, board):
-			"""Asks the player to make a move
+	def make_move(self, board):
+		"""Asks the player to make a move
+		
+		Parameters
+        ----------
+		board : Board
+			the current board
+		
+		Returns
+    	-------
+		int
+			the column that the player selected
+		"""
 
-			Parameters
-			----------
-			board : Board
-				the current board
-
-			Returns
-			-------
-			int
-				the column that the player selected
-			"""
-
-			# Asking the player to make a move
-			move = input(f'This is the current board, {self.name} please make a move 1-7\n')
-			# If the player wrote AI, so the computer helps him in the game
-			if move.lower() == 'ai':
-				# We creates a temporary computer object to do a move for the player
-				computer_player = Computer(self.name, self.marker, self.opponent_marker)
-				return computer_player.make_move(board)
+		# Asking the player to make a move
+		move = input(f'This is the current board, {self.name} please make a move 1-7\n')
+		# If the player wrote AI, so the computer helps him in the game
+		if move.lower() == 'ai':
+			# We creates a temporary computer object to do a move for the player
+			computer_player = Computer(self.name, self.marker, self.opponent_marker)
+			return computer_player.make_move(board)
+		else:
+			# Otherwise, we return the move that the human player wrote
+			move = int(move) - 1
+		while True:
+			# If the move is legal, so the method returns it.
+			if board.legal_move(move):
+				return move
+			# Otherwise, the method asks the player again, until he returns a valid answer.
 			else:
-				# Otherwise, we return the move that the human player wrote
-				move = int(move) - 1
-			while True:
-				# If the move is legal, so the method returns it.
-				if board.legal_move(move):
-					return move
-				# Otherwise, the method asks the player again, until he returns a valid answer.
+				# Like before, the method asks the player to make a move, and the player can answer 'AI'
+				move = input('Illegal move, please try again.\n')
+				if move.lower() == 'ai':
+					computer_player = Computer(self.name, self.marker, self.opponent_marker)
+					return computer_player.make_move(board)
 				else:
-					# Like before, the method asks the player to make a move, and the player can answer 'AI'
-					move = input('Illegal move, please try again.\n')
-					if move.lower() == 'ai':
-						computer_player = Computer(self.name, self.marker, self.opponent_marker)
-						return computer_player.make_move(board)
-					else:
-						move = int(move) - 1
+					move = int(move) - 1
 
 
 class Random(Player):
@@ -333,7 +333,7 @@ class Random(Player):
 	Methods
 	-------
 	make_move(board)
-		Make a random move using the choice function from the random library
+		Makes a random move using the choice function from the random library
 	"""
 
 	def __init__(self, name, marker, opponent_marker):
@@ -368,17 +368,26 @@ class Computer(Player):
 
 	...
 
-	Parameters
+	Attributes
 	----------
 	name : str
-		the name of the player
+		the name of the random player
 	marker : str
-		the marker of the player
+		the marker of the random player
 	opponent_marker : str
 		the marker of the opponent player
+	depth : int
+		how many steps the computer will think ahead (default value is 4)
+
+	Methods
+	-------
+	score_move(board, i, depth, alpha, beta, turn = True)
+		Score a move using the Minimax algorithm and Alpha Beta Pruning
+	make_move(board)
+		Makes a move by scroing all the colums using the score_move method
 	"""
 
-	def __init__(self, name, marker, opponent_marker):
+	def __init__(self, name, marker, opponent_marker, depth = 4):
 		"""
 		Parameters
         ----------
@@ -388,9 +397,12 @@ class Computer(Player):
 			the marker of the player
 		opponent_marker : str
 			the marker of the opponent player
+		depth : int, optional
+			how many steps the computer will think ahead (default value is 4)
 		"""
 
 		Player.__init__(self, name, marker, opponent_marker)
+		self.depth = depth
 
 	def score_move(self, board, i, depth, alpha, beta, turn=True):
 		"""Returns the score of given move
@@ -484,9 +496,9 @@ class Computer(Player):
 				# and the column to the moves list
 				if i == 3:
 					# If the column is the middle column, we add 4 points to the score
-					moves.append((self.score_move(board, i, 4, -inf, inf) + 4, i))
+					moves.append((self.score_move(board, i, self.depth, -inf, inf) + 4, i))
 				else:
-					moves.append((self.score_move(board, i, 4, -inf, inf), i))
+					moves.append((self.score_move(board, i, self.depth, -inf, inf), i))
 		# By sorting the list we get a list that sorted from the lowest to highest score
 		# then we choose the the highest score column
 		return sorted(moves)[-1][1]
