@@ -478,7 +478,8 @@ class Computer(Player):
 		return sorted(moves)[-1][1]
 
 
-if __name__ == "__main__":
+def main():
+	"""The main function that runs the game"""
 	# Setting the first player
 	turn = False
 	# Creating a board object
@@ -510,3 +511,7 @@ if __name__ == "__main__":
 		print(f'Congratulations {current_player.name}, you win:')
 	# Finally, we print the final board
 	print(board.to_string())
+
+
+if __name__ == "__main__":
+	main()
